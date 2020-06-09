@@ -37,8 +37,8 @@ const seeds = [
  
 async function seedDB(){
 	try{
-		await User.deleteMany({});
-		console.log("Users removed");
+		// await User.deleteMany({});
+		// console.log("Users removed");
 		await Campground.deleteMany({});
 		console.log("Campgrounds removed");
 		await Comment.deleteMany({});

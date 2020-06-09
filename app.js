@@ -18,7 +18,15 @@ const campgroundRoutes = require("./routes/campgrounds"),
 
 mongoose.set("useUnifiedTopology", true);
 mongoose.set("useFindAndModify", false);
-mongoose.connect("mongodb://localhost:27017/yelp_camp", {useNewUrlParser: true});
+mongoose.connect("mongodb+srv://changliu:andyai6742@cluster0-alzt4.mongodb.net/<dbname>?retryWrites=true&w=majority", {
+	useNewUrlParser: true,
+	useCreateIndex: true
+}).then(() => {
+	console.log("Connected to DB!");
+}).catch(err => {
+	console.log("ERROR:", err.message);
+});
+
 app.use(bodyParser.urlencoded({extended: true}));
 app.set("view engine", "ejs");
 app.use(express.static(__dirname + "/public"));
@@ -26,7 +34,7 @@ app.use(methodOverride("_method"));
 app.use(flash());
 
 // Seed the database
-//seedDB();
+seedDB();
 
 // Passport config
 app.use(require("express-session")({
