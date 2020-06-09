@@ -18,7 +18,7 @@ const campgroundRoutes = require("./routes/campgrounds"),
 
 mongoose.set("useUnifiedTopology", true);
 mongoose.set("useFindAndModify", false);
-mongoose.connect("mongodb+srv://changliu:andyai6742@cluster0-alzt4.mongodb.net/<dbname>?retryWrites=true&w=majority", {
+mongoose.connect(process.env.DATABASEURL, {
 	useNewUrlParser: true,
 	useCreateIndex: true
 }).then(() => {
@@ -34,7 +34,7 @@ app.use(methodOverride("_method"));
 app.use(flash());
 
 // Seed the database
-seedDB();
+// seedDB();
 
 // Passport config
 app.use(require("express-session")({
