@@ -5,13 +5,32 @@ const express = require("express"),
 
 //Index - show all campgrounds
 router.get("/", function(req, res){
-	Campground.find({}, function(err, allCampgrounds){
-		if(err){
-			console.log(err);
-		}
-		else{
-			res.render("campgrounds/index", {campgrounds: allCampgrounds});
-		}
+	let perPage = 8;
+    let pageQuery = parseInt(req.query.page);
+    let pageNumber = pageQuery ? pageQuery : 1;
+	let findObj = {};
+	if(req.query.search){
+		findObj.name = new RegExp(escapeRegex(req.query.search), "gi");
+	}
+	Campground.find(findObj).skip((perPage * pageNumber) - perPage).limit(perPage).exec(function(err, allCampgrounds){
+		Campground.countDocuments().exec(function(err, count){
+			if(err){
+				console.log(err);
+			}
+			else if(req.query.search && allCampgrounds.length < 1){
+				req.flash("error", "No such campground found");
+				res.redirect("back");
+			}
+			else{
+				res.render("campgrounds/index", {
+					campgrounds: allCampgrounds,
+					page: "campgrounds",
+					current: pageNumber,
+					pages: Math.ceil(count / perPage),
+					search: req.query.search
+				});
+			}
+		});
 	});
 });
 
@@ -24,13 +43,13 @@ router.get("/new", middleware.isLoggedIn, function(req, res){
 router.post("/", middleware.isLoggedIn, function(req, res){
 	const name = req.body.name;
     const image = req.body.image;
-	const price = req.body.price;
+	const cost = req.body.cost;
     const desc = req.body.description;
     const author = {
         id: req.user._id,
         username: req.user.username
     }
-    const newCampground = {name: name, image: image, price: price, description: desc, author: author};
+    const newCampground = {name: name, image: image, cost: cost, description: desc, author: author};
 	Campground.create(newCampground, function(err, campground){
 		if(err){
 			console.log(err);
@@ -85,5 +104,9 @@ router.delete("/:id", middleware.checkCampgroundOwnership, function(req, res){
 		}
 	});
 });
+
+function escapeRegex(text){
+    return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
+};
 
 module.exports = router;

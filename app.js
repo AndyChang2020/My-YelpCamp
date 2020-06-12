@@ -6,7 +6,7 @@ const express = require("express"),
 	  passport = require("passport"),
 	  localStrategy = require("passport-local"),
 	  passportLocalMongoose = require("passport-local-mongoose"),
-	  methodOverride = require("method-override");
+	  methodOverride = require("method-override"),
 	  Campground = require("./models/campground"),
 	  Comment = require("./models/comment"),
 	  User = require("./models/user"),
@@ -18,6 +18,7 @@ const campgroundRoutes = require("./routes/campgrounds"),
 
 mongoose.set("useUnifiedTopology", true);
 mongoose.set("useFindAndModify", false);
+// Terminal: export DATABASEURL="mongodb://localhost/yelp_camp"
 mongoose.connect(process.env.DATABASEURL, {
 	useNewUrlParser: true,
 	useCreateIndex: true
@@ -27,6 +28,7 @@ mongoose.connect(process.env.DATABASEURL, {
 	console.log("ERROR:", err.message);
 });
 
+app.locals.moment = require("moment");
 app.use(bodyParser.urlencoded({extended: true}));
 app.set("view engine", "ejs");
 app.use(express.static(__dirname + "/public"));
